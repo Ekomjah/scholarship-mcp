@@ -43,10 +43,14 @@ export function formatScholarship(s) {
 
 export function formatScholarshipList(docs) {
   if (!docs.length) return "No scholarships found matching your filters.";
-  const parts = docs.map(
-    (s, i) =>
-      `${i + 1}. [${s._id}] ${s.title} — ${s.provider} (${amountText(s)}, ${deadlineText(s)})`,
-  );
+  const parts = docs.map((s, i) => {
+    const meta = [
+      amountText(s),
+      deadlineText(s),
+      ...(s.gpaMinimum != null ? [`GPA >= ${s.gpaMinimum}`] : []),
+    ].join(", ");
+    return `${i + 1}. [${s._id}] ${s.title} — ${s.provider} (${meta})`;
+  });
   return `${parts.join("\n")}\n\n${docs.length} result(s).`;
 }
 
@@ -86,7 +90,8 @@ export function formatSavedList(docs) {
     const sch = entry.scholarship && typeof entry.scholarship === "object" ? entry.scholarship : null;
     const name = sch ? `${sch.title} — ${sch.provider}` : `Scholarship ${String(entry.scholarship)}`;
     const amount = sch ? `(${amountText(sch)}, ${deadlineText(sch)})` : "";
-    return `${i + 1}. [${String(entry.scholarship)}] ${name} ${amount}[${entry.status}]`;
+    const idPart = sch ? sch._id : entry.scholarship;
+    return `${i + 1}. [${String(idPart)}] ${name} ${amount}[${entry.status}]`;
   });
   return `Saved shortlist (${docs.length}):\n${parts.join("\n")}`;
 }

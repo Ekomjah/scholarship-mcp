@@ -42,7 +42,7 @@ export async function saveScholarship({
   return SavedScholarship.findOneAndUpdate(
     { researcherId, scholarship: id },
     { $set: { status } },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
   ).lean();
 }
 
